@@ -1,11 +1,10 @@
-import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
-import LogInScreen from "./screens/LogIn";
-import SignUpScreen from "./screens/SignUp";
-import { stackOptionsHeader } from "./constants/styles";
-import WelcomeScreen from "./screens/Welcome";
 import { StatusBar } from "expo-status-bar";
+
+import AuthProvider from "./store/auth-context";
+import Navigation from "./components/stack/Navigation";
+import LoadingOverlay from "./components/ui/LoadingOverlay";
+import useToken from "./hooks/useToken";
 
 export type RootStackParamList = {
   logIn: undefined;
@@ -13,40 +12,27 @@ export type RootStackParamList = {
   welcome: undefined;
 };
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+export const Stack = createNativeStackNavigator<RootStackParamList>();
 
-function AuthStack() {
-  return (
-    <Stack.Navigator screenOptions={{ ...stackOptionsHeader }}>
-      <Stack.Screen
-        name="logIn"
-        component={LogInScreen}
-        options={{ title: "Login" }}
-      />
-      <Stack.Screen
-        name="signUp"
-        component={SignUpScreen}
-        options={{ title: "Signup" }}
-      />
-    </Stack.Navigator>
-  );
+function Root() {
+  const { loadingToken } = useToken();
+
+  if (loadingToken) {
+    return <LoadingOverlay message="LOADING..." />;
+  }
+
+  return <Navigation />;
 }
 
-function AuthenticatedStack() {
-  return (
-    <Stack.Navigator screenOptions={{ ...stackOptionsHeader }}>
-      <Stack.Screen name="welcome" component={WelcomeScreen} />
-    </Stack.Navigator>
-  );
-}
-
-export default function App() {
+function App() {
   return (
     <>
       <StatusBar style="light" />
-      <NavigationContainer>
-        <AuthStack />
-      </NavigationContainer>
+      <AuthProvider>
+        <Root />
+      </AuthProvider>
     </>
   );
 }
+
+export default App;
