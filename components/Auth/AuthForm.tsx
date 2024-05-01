@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 
-import Input from "./Input";
-import Button from "../UI/Button";
+import Button from "../ui/Button";
 import { errorType } from "./AuthContent";
+import Input from "./Input";
 
 interface IAuthFormProps {
   isLogin?: boolean;
@@ -15,7 +15,7 @@ enum authActionKind {
   EMAIL = "email",
   PASSWORD = "password",
   CONFIRM_EMAIL = "confirmEmail",
-  CONFIRM_PASSWORD = "confirmPsw",
+  CONFIRM_PASSWORD = "confirmPassword",
 }
 
 export type cridentialType = {
