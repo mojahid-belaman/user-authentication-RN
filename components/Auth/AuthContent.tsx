@@ -1,8 +1,7 @@
 import { Alert, StyleSheet, View } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 
-import AuthForm, { cridentialType } from "./AuthForm";
-import Button from "../UI/Button";
+import Button from "../ui/Button";
 import { colors } from "../../constants/styles";
 import { RootStackParamList } from "../../App";
 import { useState } from "react";
@@ -11,9 +10,11 @@ import {
   isEqual,
   passwordIsValid,
 } from "../../utils/helper/validation";
+import AuthForm, { cridentialType } from "./AuthForm";
 
 interface IAuthContentProps {
   isLogin?: boolean;
+  onAuthenticate?: (email: string, password: string) => Promise<void>;
 }
 
 export type errorType = {
@@ -24,8 +25,15 @@ export type errorType = {
 };
 
 function AuthContent(props: IAuthContentProps) {
-  const { isLogin } = props;
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { isLogin, onAuthenticate } = props;
+  const navigation = useNavigation<
+    NavigationProp<RootStackParamList> & {
+      replace<RouteName extends keyof RootStackParamList>(
+        screen: RouteName
+      ): unknown;
+    }
+  >();
+
   const [credentialsInvalid, setCredentailsInvalid] = useState<errorType>({
     email: false,
     password: false,
@@ -34,7 +42,7 @@ function AuthContent(props: IAuthContentProps) {
   });
 
   function switchAthModeHandler() {
-    isLogin ? navigation.navigate("signUp") : navigation.navigate("logIn");
+    isLogin ? navigation.replace("signUp") : navigation.replace("logIn");
   }
 
   function submitHandler(credentials: cridentialType) {
@@ -51,7 +59,7 @@ function AuthContent(props: IAuthContentProps) {
     if (
       !emailValid ||
       !passwordValid ||
-      (!isLogin && (emailAreEqual || passwordAreEqual))
+      (!isLogin && (!emailAreEqual || !passwordAreEqual))
     ) {
       Alert.alert("Invalid Input", "Please check your entered credentials.");
       setCredentailsInvalid({
@@ -68,9 +76,8 @@ function AuthContent(props: IAuthContentProps) {
       confirmEmail: !emailValid || !emailAreEqual,
       confirmPassword: !passwordValid || !passwordAreEqual,
     });
+    onAuthenticate!(email, password);
   }
-
-  console.log(credentialsInvalid);
 
   return (
     <View style={styles.container}>
