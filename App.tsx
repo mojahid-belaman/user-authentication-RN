@@ -1,4 +1,3 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
 
 import AuthProvider from "./store/auth-context";
@@ -11,8 +10,6 @@ export type RootStackParamList = {
   signUp: undefined;
   welcome: undefined;
 };
-
-export const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function Root() {
   const { loadingToken } = useToken();
